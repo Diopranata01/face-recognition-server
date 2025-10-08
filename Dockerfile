@@ -1,24 +1,26 @@
-# Use an official lightweight Python image
+# Use a base image that already has cmake and dlib dependencies
 FROM python:3.10-slim
 
-# Set the working directory in the container
-WORKDIR /app
-
-# Copy all files from your project into the container
-COPY . /app
-
-# Install system dependencies (needed for opencv and dlib)
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    build-essential \
     cmake \
-    libgl1-mesa-glx \
-    libglib2.0-0 \
+    libboost-all-dev \
+    libopenblas-dev \
+    liblapack-dev \
+    libx11-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
-RUN pip install --no-cache-dir fastapi uvicorn face_recognition opencv-python numpy requests
+# Copy your project
+WORKDIR /app
+COPY . .
 
-# Expose the port FastAPI will run on
+# Install Python dependencies
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+
+# Expose port
 EXPOSE 8000
 
-# Command to run the application
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the FastAPI app
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
