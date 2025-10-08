@@ -1,0 +1,20 @@
+# Exclude datasets, models, and local files
+face_encodings.pkl
+attendance.csv
+__pycache__/
+*.pyc
+*.pkl
+*.db
+
+# Ignore dataset folders
+/dataset/
+/Images/
+/known_faces/
+
+# IDE / system files
+.vscode/
+.env
+.DS_Store
+
+# Optional: ignore any temporary uploads
+uploads/
