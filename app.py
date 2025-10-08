@@ -8,6 +8,7 @@ from datetime import datetime
 import face_recognition
 import pickle
 import requests
+os.system("pip install dlib-bin")
 
 app = FastAPI()
 
