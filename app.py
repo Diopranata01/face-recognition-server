@@ -10,6 +10,8 @@ import pickle
 import requests
 os.system("pip install dlib-bin")
 
+from main import encode_known_faces
+
 app = FastAPI()
 
 # === CONFIG ===
@@ -148,9 +150,9 @@ def upload_form():
     """
 
 @app.post("/recognize")
-async def recognize(file: UploadFile = File(...)):
+async def recognize(image: UploadFile = File(...)):
     try:
-        img_bytes = await file.read()
+        img_bytes = await image.read()
         np_arr = np.frombuffer(img_bytes, np.uint8)
         image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
@@ -175,6 +177,16 @@ async def recognize(file: UploadFile = File(...)):
 
     except Exception as e:
         return JSONResponse(status_code=500, content={"error": str(e)})
+
+@app.post("/reencode")
+async def reencode_faces():
+    try:
+        global known_encodings, known_names
+        known_encodings, known_names = encode_known_faces("dataset", save_encodings=True)
+        return {"status": "success", "count": len(known_encodings)}
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"error": str(e)})
+
 
 @app.post("/collect")
 async def collect_person_image(name: str = Form(...), file: UploadFile = File(...)):
